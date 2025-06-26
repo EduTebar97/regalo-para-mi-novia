@@ -1,25 +1,41 @@
 import { createGlobalStyle } from 'styled-components';
 
-// Este archivo reemplaza a index.css para los estilos base.
 const GlobalStyle = createGlobalStyle`
   /* Importa las fuentes desde Google Fonts */
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500&display=swap');
 
-  /* Reset básico y estilos del body */
-  body {
+  /*
+    Reseteo de CSS más robusto para asegurar consistencia entre navegadores.
+    Esto soluciona el problema de centrado.
+  */
+  *, *::before, *::after {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
-    background-color: #fdf2f8; /* Color rosa pálido de fondo */
-    color: #374151; /* Color de texto gris oscuro */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Estilos para los encabezados */
+  /* Asegura que la app ocupe toda la pantalla */
+  html, body, #root {
+    height: 100%;
+    width: 100%;
+  }
+
+  body {
+    font-family: 'Poppins', 'sans-serif';
+    background-color: #fdf2f8;
+    color: #374151;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+  }
+  
   h1, h2, h3 {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Playfair Display', 'serif';
+    text-wrap: balance; /* Mejora cómo se parten los títulos en varias líneas */
+  }
+
+  img, picture, video, canvas, svg {
+    display: block;
+    max-width: 100%;
   }
 `;
 

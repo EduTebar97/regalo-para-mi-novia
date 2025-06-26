@@ -4,16 +4,16 @@ import AnimatedPage from '../components/AnimatedPage';
 
 const PageContainer = styled.div`
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  width: 100%;
+  display: grid; // CAMBIO: Usamos 'grid' para un mejor control del centrado.
+  place-items: center; // CAMBIO: Centra el contenido perfectamente en el medio.
   text-align: center;
   padding: 1rem;
+  box-sizing: border-box; // Asegura que el padding no cause desbordamiento.
 `;
 
 const Title = styled.h1`
-  font-size: 3rem;
+  font-size: 2.5rem; // Ajustado para móviles
   color: #db2777;
   margin-bottom: 1rem;
   @media (min-width: 768px) { font-size: 4.5rem; }

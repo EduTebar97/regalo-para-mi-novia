@@ -10,7 +10,9 @@ import Video from './pages/Video';
 import PruebaAbsurda from './pages/PruebaAbsurda';
 import Audio from './pages/Audio';
 import FormularioCorreo from './pages/FormularioCorreo';
-import CartaFinal from './pages/CartaFinal';
+
+// CAMBIO: Se ha eliminado la importación y la ruta para 'CartaFinal'
+// ya que ahora se envía por correo y no es una página.
 
 function App() {
   const location = useLocation();
@@ -27,7 +29,6 @@ function App() {
         <Route path="/prueba-absurda" element={<PruebaAbsurda />} />
         <Route path="/audio" element={<Audio />} />
         <Route path="/formulario" element={<FormularioCorreo />} />
-        <Route path="/carta-final" element={<CartaFinal />} />
       </Routes>
     </AnimatePresence>
   );

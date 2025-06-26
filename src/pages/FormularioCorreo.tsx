@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import { useState, useRef, type FormEvent } from 'react';
 import styled from 'styled-components';
+import emailjs from '@emailjs/browser';
 import AnimatedPage from '../components/AnimatedPage';
 
 const PageContainer = styled.div`
@@ -32,22 +33,41 @@ const SubmitButton = styled.button`
     &:hover:not(:disabled) { background-color: #059669; transform: scale(1.05); }
     &:disabled { opacity: 0.5; cursor: wait; }
 `;
+const ErrorMessage = styled.p`margin-top: 1rem; color: #ef4444; font-weight: 500;`;
+const SuccessMessage = styled.div`
+    p { margin-bottom: 1rem; }
+`;
 
 const FormularioCorreo = () => {
-    const [email, setEmail] = useState('');
+    const form = useRef<HTMLFormElement>(null);
     const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
+    const [recipientEmail, setRecipientEmail] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const sendEmail = (e: FormEvent) => {
         e.preventDefault();
-        if (!email || !email.includes('@')) {
+        
+        if (!form.current || !recipientEmail.includes('@')) {
+            setErrorMessage('Por favor, introduce un correo válido.');
             setStatus('error');
             return;
         }
+
         setStatus('sending');
-        setTimeout(() => {
-            console.log(`Simulando envío a: ${email}`);
-            setStatus('success');
-        }, 2000);
+        setErrorMessage('');
+
+        const serviceID = "service_qptebgl";
+        const templateID = "template_5125wif";
+        const publicKey = "LDBu5EPHosHNz9IFS";
+        
+        emailjs.sendForm(serviceID, templateID, form.current, publicKey)
+            .then(() => {
+                setStatus('success');
+            }, (error) => {
+                console.error('FALLO DE EMAILJS:', error);
+                setErrorMessage(`Error del servicio: ${error.text}. Revisa las claves o la configuración de EmailJS.`);
+                setStatus('error');
+            });
     };
 
     return (
@@ -58,22 +78,28 @@ const FormularioCorreo = () => {
                     <Subtitle>... pero es solo el comienzo de tu increíble día. ¡Feliz cumpleaños una vez más, mi vida!</Subtitle>
                     <FormWrapper>
                         {status !== 'success' ? (
-                            <form onSubmit={handleSubmit}>
+                            <form ref={form} onSubmit={sendEmail}>
                                 <FormTitle>Un último regalo</FormTitle>
                                 <FormText>Tengo una carta para ti. Escribe tu correo aquí abajo y te la enviaré al instante.</FormText>
-                                <Input type="email" placeholder="Tu correo electrónico" value={email} onChange={(e) => setEmail(e.target.value)} />
+                                <Input 
+                                    type="email" 
+                                    // IMPORTANTE: Este atributo 'name' debe coincidir con la configuración de "Auto Reply" en EmailJS.
+                                    name="to_email" 
+                                    placeholder="Tu correo electrónico"
+                                    value={recipientEmail}
+                                    onChange={(e) => setRecipientEmail(e.target.value)}
+                                />
                                 <SubmitButton type="submit" disabled={status === 'sending'}>
                                     {status === 'sending' ? 'Enviando...' : 'Recibir mi carta'}
                                 </SubmitButton>
-                                {status === 'error' && <p style={{marginTop: '1rem', color: '#ef4444'}}>Por favor, introduce un correo válido.</p>}
+                                {status === 'error' && <ErrorMessage>{errorMessage}</ErrorMessage>}
                             </form>
                         ) : (
-                            <div>
-                                <FormTitle style={{color: '#059669'}}>¡Enviado!</FormTitle>
-                                <p>He mandado la carta a <strong>{email}</strong>.</p>
-                                <p style={{marginTop: '1rem'}}>Revisa tu bandeja de entrada (y quizás la de spam, por si acaso 😉).</p>
-                                <p style={{marginTop: '1.5rem', fontSize: '0.875rem'}}>P.D: Para ver la carta ahora, haz <a href="/carta-final" style={{color: '#ec4899', fontWeight: 'bold', textDecoration: 'underline'}}>clic aquí</a>.</p>
-                            </div>
+                            <SuccessMessage>
+                                <FormTitle style={{color: '#059669'}}>¡Carta Enviada!</FormTitle>
+                                <p>Revisa la bandeja de entrada de <strong>{recipientEmail}</strong>.</p>
+                                <p>Espero que te guste. ¡Te quiero!</p>
+                            </SuccessMessage>
                         )}
                     </FormWrapper>
                 </ContentWrapper>
